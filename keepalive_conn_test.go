@@ -1,43 +1,65 @@
-package main
+package keepaliveconn
 
 import (
 	"fmt"
 	"io"
 	"net"
 	"os"
-
-	log "github.com/sirupsen/logrus"
 )
 
-func unix_to_tcp(tcp, unix string) error {
-	listener, err := net.Listen("unix", unix)
+func fileServer(tcp string) {
+	listener, err := net.Listen("tcp", tcp)
 	if err != nil {
-		return fmt.Errorf("usbmuxd: fail to listen on: %v, error:%v", unix, err)
+		panic(fmt.Errorf("usbmuxd: fail to listen on: %v, error:%v", tcp, err))
 	}
 
-	os.Chmod(unix, 0777)
-	log.Infoln("listen on: ")
 	for {
-		src, err := listener.Accept()
+		_conn, err := listener.Accept()
 		if err != nil {
-			return fmt.Errorf("usbmuxd: fail to listen accept: %v", err)
+			fmt.Println(fmt.Errorf("usbmuxd: fail to listen accept: %v", err))
+			continue
 		}
 
-		dstConn, err := net.Dial("tcp", tcp)
-
-		src2 := NewKeepaliveConn(src)
-
+		conn2, ok := _conn.(*net.TCPConn)
+		if !ok {
+			panic("conn convert to TCPConn failed")
+		}
+		conn := NewKeepaliveConn(conn2)
 		go func() {
-			io.Copy(dstConn, src)
-			dstConn.Close()
-		}()
-		go func() {
-			io.Copy(src, dstConn)
-			src.Close()
+			defer conn.Close()
+			f, err := os.Create("file.bin")
+			if err != nil {
+				panic(err)
+			}
+			defer f.Close()
+
+			for {
+				n, err := io.Copy(f, conn)
+				fmt.Printf("file write: %v bytes, err:%v\n", n, err)
+				return
+			}
 		}()
 	}
 }
 
-func startAsUsbmuxd() {
-	unix_to_tcp("127.0.0.1:27015", "/var/run/usbmuxd")
+func fileClient(server, filePath string) {
+	conn, err := net.Dial("tcp", server)
+	if err != nil {
+		fmt.Printf("dial failed at %v by err:%v\n", server, err)
+		return
+	}
+	conn = NewKeepaliveConn(conn)
+	defer conn.Close()
+
+	f, err := os.Open(filePath)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	// b := make([]byte, 1024)
+	_, err = io.Copy(conn, f)
+	if err != nil {
+		panic(err)
+	}
 }
