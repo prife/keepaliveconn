@@ -13,7 +13,7 @@ go mobile library
 
 server
 
-```
+```go
 func server(tcp string) {
 	listener, err := net.Listen("tcp", tcp)
 	if err != nil {
@@ -72,7 +72,7 @@ func main() {
 
 client
 
-```
+```go
 func client(server string) {
 	conn, err := net.Dial("tcp", server)
 	if err != nil {
