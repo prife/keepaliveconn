@@ -5,6 +5,13 @@
 - implement net.Conn interface
 - inner keepalive supported
 
+## Install
+
+
+```bash
+$ go get github.com/prife/keepaliveconn
+```
+
 ## Examples
 
 server
