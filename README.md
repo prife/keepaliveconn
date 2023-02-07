@@ -2,14 +2,21 @@
 
 go mobile library
 
-## go-keepalive-conn
+## Install
 
-## Features
+```bash
+$ go get github.com/prife/gomlib
+```
 
-- implement net.Conn interface
-- inner keepalive supported
+## network
 
-## Examples
+### keepaliveconn
+
+- Features
+    - implement net.Conn interface
+    - inner keepalive supported
+
+**Examples**
 
 server
 
@@ -33,7 +40,7 @@ func server(tcp string) {
 			panic("conn convert to TCPConn failed")
 		}
 
-        // wrap the conn to create a keepalive-conn
+		// wrap the conn to create a keepalive-conn
 		conn = NewKeepaliveConn(conn)
 		go func() {
 			defer conn.Close()
@@ -41,9 +48,9 @@ func server(tcp string) {
 				conn.SetReadDeadline(time.Now().Add(time.Second * 3))
 				n, err := conn.Read(b)
 
-                // Heartbeat invoked by server, the client will response automaticly
+				// Heartbeat invoked by server, the client will response automaticly
 				if nerr, ok := err.(net.Error); ok && nerr.Timeout() {
-                    conn.Heartbeat([]byte("heart beat"))
+					conn.Heartbeat([]byte("heart beat"))
 					fmt.Printf("<-- heart beat --> err:%v\n", err)
 					continue
 				}
@@ -92,4 +99,3 @@ func client(server string) {
 func main() {
     client("127.0.0.1:2000")
 }
-
