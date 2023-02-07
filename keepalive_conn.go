@@ -79,14 +79,9 @@ func (c *KeepaliveConn) Read(b []byte) (n int, err error) {
 
 			// 此时c.buf至少包含了下个包的header
 			// 注意err仍然可能存在，先解析包
-			// fmt.Println("buf len: ", c.buf.Len())
-			// fmt.Println(hex.Dump(c.buf.Bytes()))
-
 			_, _ = c.buf.Read(c.header)
 			payloadSize := int(binary.BigEndian.Uint32(c.header[:4])) //4
 			payloadType := binary.BigEndian.Uint16(c.header[4:])      //2
-
-			// fmt.Println("package: ", payloadSize, payloadType, c.buf.Len())
 
 			// c.buf中不含一个完整包裹，继续读直到含有一个或以上包或者有错误
 			for c.buf.Len() < payloadSize && err == nil {
