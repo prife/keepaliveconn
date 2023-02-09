@@ -165,7 +165,7 @@ func (c *KeepaliveConn) SetWriteDeadline(t time.Time) error {
 	return c.c.SetReadDeadline(t)
 }
 
-func Copy(dst net.Conn, src KeepaliveConn) (written int64, err error) {
+func Copy(dst net.Conn, src *KeepaliveConn) (written int64, err error) {
 	for {
 		buf := make([]byte, 32*1024)
 		src.SetReadDeadline(time.Now().Add(src.keepaliveInterval))
