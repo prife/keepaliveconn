@@ -23,13 +23,13 @@ type KeepaliveConn struct {
 	keepaliveInterval time.Duration
 }
 
-func NewKeepaliveConn(c net.Conn) *KeepaliveConn {
+func New(c net.Conn, keepaliveInterval time.Duration) *KeepaliveConn {
 	return &KeepaliveConn{
 		c:                 c,
 		header:            make([]byte, 6),
 		writeHeader:       make([]byte, 6),
 		left:              0,
-		keepaliveInterval: time.Minute * 10,
+		keepaliveInterval: time.Minute * keepaliveInterval,
 	}
 }
 
