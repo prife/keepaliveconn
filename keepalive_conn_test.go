@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"time"
 )
 
 func fileServer(tcp string) {
@@ -24,7 +25,7 @@ func fileServer(tcp string) {
 		if !ok {
 			panic("conn convert to TCPConn failed")
 		}
-		conn := NewKeepaliveConn(conn2)
+		conn := New(conn2, time.Duration(10))
 		go func() {
 			defer conn.Close()
 			f, err := os.Create("file.bin")
@@ -48,7 +49,7 @@ func fileClient(server, filePath string) {
 		fmt.Printf("dial failed at %v by err:%v\n", server, err)
 		return
 	}
-	conn = NewKeepaliveConn(conn)
+	conn = New(conn, time.Duration(10))
 	defer conn.Close()
 
 	f, err := os.Open(filePath)
