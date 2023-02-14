@@ -4,14 +4,20 @@ import (
 	"errors"
 	"io"
 	"net"
+	"os"
 	"time"
 )
 
 func Copy(dst net.Conn, src *KeepaliveConn) (written int64, err error) {
+	buf := make([]byte, 32*1024)
 	for {
-		buf := make([]byte, 32*1024)
 		src.SetReadDeadline(time.Now().Add(src.keepaliveInterval))
 		nr, er := src.Read(buf)
+		if errors.Is(er, os.ErrDeadlineExceeded) {
+			src.Heartbeat([]byte("heart beat"))
+			continue
+		}
+
 		if nr > 0 {
 			nw, ew := dst.Write(buf[0:nr])
 			if nw < 0 || nr < nw {
@@ -31,10 +37,6 @@ func Copy(dst net.Conn, src *KeepaliveConn) (written int64, err error) {
 			}
 		}
 		if er != nil {
-			if nerr, ok := er.(net.Error); ok && nerr.Timeout() {
-				src.Heartbeat([]byte("heart beat"))
-				continue
-			}
 			if er != io.EOF {
 				err = er
 			}
