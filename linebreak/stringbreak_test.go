@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestLineWriter_Write(t *testing.T) {
+func TestStringBreak_Write(t *testing.T) {
 	log := func(line string) {
 		fmt.Println(line)
 	}
@@ -23,7 +23,7 @@ func TestLineWriter_Write(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			l := &LineWriter{
+			l := &StringBreak{
 				Log: tt.log,
 			}
 			gotN, _ := l.Write(tt.args)

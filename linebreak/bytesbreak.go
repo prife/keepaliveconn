@@ -4,12 +4,12 @@ import (
 	"bytes"
 )
 
-type LinebufWriter struct {
+type BytesBreak struct {
 	buf bytes.Buffer
 	Log func([]byte)
 }
 
-func (l *LinebufWriter) Write(b []byte) (n int, err error) {
+func (l *BytesBreak) Write(b []byte) (n int, err error) {
 	if len(b) == 0 {
 		return
 	}
@@ -34,13 +34,13 @@ func (l *LinebufWriter) Write(b []byte) (n int, err error) {
 	return
 }
 
-func (l *LinebufWriter) LastLine() []byte {
+func (l *BytesBreak) LastLine() []byte {
 	if l.buf.Len() > 0 {
 		return l.buf.Bytes()
 	}
 	return nil
 }
 
-func (l *LinebufWriter) HasLastLine() bool {
+func (l *BytesBreak) HasLastLine() bool {
 	return l.buf.Len() > 0
 }

@@ -19,7 +19,7 @@ Install: VerifyingApplication (40%)
 ERROR: Install failed. Got error "ApplicationVerificationFailed" with code 0xe8008015: ...
 */
 
-type LineWriter struct {
+type StringBreak struct {
 	buf strings.Builder
 	Log func(line string)
 }
@@ -34,7 +34,7 @@ func checkLineBreak(b []byte) bool {
 	return false
 }
 
-func (l *LineWriter) Write(b []byte) (n int, err error) {
+func (l *StringBreak) Write(b []byte) (n int, err error) {
 	if len(b) == 0 {
 		return
 	}
@@ -59,13 +59,13 @@ func (l *LineWriter) Write(b []byte) (n int, err error) {
 
 	return
 }
-func (l *LineWriter) LastLine() string {
+func (l *StringBreak) LastLine() string {
 	if l.buf.Len() > 0 {
 		return l.buf.String()
 	}
 	return ""
 }
 
-func (l *LineWriter) HasLastLine() bool {
+func (l *StringBreak) HasLastLine() bool {
 	return l.buf.Len() > 0
 }
