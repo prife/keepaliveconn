@@ -1,4 +1,4 @@
-package keepaliveconn
+package network
 
 import (
 	"fmt"
@@ -25,7 +25,7 @@ func fileServer(tcp string) {
 		if !ok {
 			panic("conn convert to TCPConn failed")
 		}
-		conn := New(conn2, time.Minute*10)
+		conn := NewKeepaliveConn(conn2, time.Minute*10)
 		go func() {
 			defer conn.Close()
 			f, err := os.Create("file.bin")
@@ -49,7 +49,7 @@ func fileClient(server, filePath string) {
 		fmt.Printf("dial failed at %v by err:%v\n", server, err)
 		return
 	}
-	conn = New(conn, time.Minute*10)
+	conn = NewKeepaliveConn(conn, time.Minute*10)
 	defer conn.Close()
 
 	f, err := os.Open(filePath)

@@ -1,4 +1,4 @@
-package keepaliveconn
+package network
 
 import (
 	"bytes"
@@ -23,7 +23,7 @@ type KeepaliveConn struct {
 	keepaliveInterval time.Duration
 }
 
-func New(c net.Conn, keepaliveInterval time.Duration) *KeepaliveConn {
+func NewKeepaliveConn(c net.Conn, keepaliveInterval time.Duration) *KeepaliveConn {
 	return &KeepaliveConn{
 		c:                 c,
 		header:            make([]byte, 6),

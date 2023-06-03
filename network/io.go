@@ -1,4 +1,4 @@
-package keepaliveconn
+package network
 
 import (
 	"errors"
